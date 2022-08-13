@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  NetworkProvider.swift
 //  
 //
 //  Created by Aleksandr Fadeev on 13.08.2022.

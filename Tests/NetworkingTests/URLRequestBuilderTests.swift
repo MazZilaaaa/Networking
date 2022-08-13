@@ -52,7 +52,7 @@ final class URLRequestBuilderTests: XCTestCase {
     
     func test_buildRequest_common() throws {
         // given
-        let api = MockAPI.createAPI(
+        let api = APIMock.createAPI(
             headers: [
                 .accept: "Application/json",
                 .authorization: "Bearer token"
@@ -79,7 +79,7 @@ final class URLRequestBuilderTests: XCTestCase {
             URLQueryItem(name: "name2", value: "value2")
         ]
         
-        let getAPI = MockAPI.createAPI(method: .get(queryItems: queryItems))
+        let getAPI = APIMock.createAPI(method: .get(queryItems: queryItems))
         
         // when
         let request = try builder.buildRequest(getAPI)
@@ -99,7 +99,7 @@ final class URLRequestBuilderTests: XCTestCase {
             URLQueryItem(name: "name2", value: "value2")
         ]
         
-        let headAPI = MockAPI(method: .head(queryItems: queryItems))
+        let headAPI = APIMock(method: .head(queryItems: queryItems))
         
         // when
         let request = try builder.buildRequest(headAPI)
@@ -115,7 +115,7 @@ final class URLRequestBuilderTests: XCTestCase {
     func test_buildPostRequest() throws {
         // given
         let body = "json".data(using: .utf8)!
-        let postAPI = MockAPI(method: .post(body: body))
+        let postAPI = APIMock(method: .post(body: body))
         
         // when
         let request = try builder.buildRequest(postAPI)
@@ -128,7 +128,7 @@ final class URLRequestBuilderTests: XCTestCase {
     func test_buildPutRequest() throws {
         // given
         let body = "json".data(using: .utf8)!
-        let putAPI = MockAPI(method: .put(body: body))
+        let putAPI = APIMock(method: .put(body: body))
         
         // when
         let request = try builder.buildRequest(putAPI)
@@ -145,7 +145,7 @@ final class URLRequestBuilderTests: XCTestCase {
             URLQueryItem(name: "name2", value: "value2")
         ]
         
-        let deleteAPI = MockAPI(method: .delete(queryItems: queryItems))
+        let deleteAPI = APIMock(method: .delete(queryItems: queryItems))
         
         // when
         let request = try builder.buildRequest(deleteAPI)
