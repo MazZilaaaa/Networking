@@ -8,11 +8,8 @@
 import Foundation
 
 protocol API {
-    
     var path: String { get }
-    
     var method: HttpMethod { get }
-    
     var headers: [HttpHeader: String]? { get }
 }
 
