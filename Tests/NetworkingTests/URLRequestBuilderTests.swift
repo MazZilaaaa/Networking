@@ -45,7 +45,7 @@ final class URLRequestBuilderTests: XCTestCase {
         // given
         let hostUrl = URL(string: "https://github.com")!
         let builder = URLRequestBuilder(hostUrl: hostUrl)
-        let postAPI = makePostAPI()
+        let postAPI = MockAPI.makePostAPI()
         
         // when
         let request = try builder.buildRequest(postAPI)
@@ -64,24 +64,5 @@ final class URLRequestBuilderTests: XCTestCase {
         postAPI.queryItems?.forEach { queryItem in
             XCTAssertTrue(request.url?.query?.contains("\(queryItem)") == true)
         }
-    }
-    
-    private func makePostAPI() -> MockAPI {
-        let mockAPI = MockAPI()
-        mockAPI.path = "/relative/path"
-        mockAPI.method = .post
-        mockAPI.body = "body".data(using: .utf8)
-        
-        mockAPI.headers = [
-            .accept: "Application/json",
-            .authorization: "Bearer token"
-        ]
-        
-        mockAPI.queryItems = [
-            URLQueryItem(name: "name1", value: "value1"),
-            URLQueryItem(name: "name2", value: "value2")
-        ]
-        
-        return mockAPI
     }
 }
