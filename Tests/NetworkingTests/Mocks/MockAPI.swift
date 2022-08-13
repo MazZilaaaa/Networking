@@ -9,30 +9,28 @@ import Foundation
 
 @testable import Networking
 
-final class MockAPI: API {
-    var path: String = ""
-    var method: HttpMethod = .get
-    var headers: [HttpHeader: String]? = nil
-    var queryItems: [URLQueryItem]? = nil
-    var body: Data? = nil
-    var sampleData: Data? = nil
+struct MockAPI: API {
+    var path: String
+    var method: HttpMethod
+    var headers: [HttpHeader: String]?
     
-    static func makePostAPI() -> MockAPI {
-        let mockAPI = MockAPI()
-        mockAPI.path = "/relative/path"
-        mockAPI.method = .post
-        mockAPI.body = "body".data(using: .utf8)
-        
-        mockAPI.headers = [
-            .accept: "Application/json",
-            .authorization: "Bearer token"
-        ]
-        
-        mockAPI.queryItems = [
-            URLQueryItem(name: "name1", value: "value1"),
-            URLQueryItem(name: "name2", value: "value2")
-        ]
-        
-        return mockAPI
+    init(
+        path: String = "/relative",
+        method: HttpMethod = .get(),
+        headers: [HttpHeader : String]? = nil
+    ) {
+        self.path = path
+        self.method = method
+        self.headers = headers
+    }
+}
+
+extension MockAPI {
+    static func createAPI(
+        path: String = "/relative",
+        method: HttpMethod = .get(),
+        headers: [HttpHeader : String]? = nil
+    ) -> API {
+        MockAPI(path: path, method: method, headers: headers)
     }
 }

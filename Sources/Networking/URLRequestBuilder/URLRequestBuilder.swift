@@ -30,7 +30,13 @@ final class URLRequestBuilder {
     func buildRequest(_ api: API) throws -> URLRequest {
         var urlComponents = URLComponents(url: hostUrl, resolvingAgainstBaseURL: false)
         urlComponents?.path = api.path
-        urlComponents?.queryItems = api.queryItems
+        
+        switch api.method {
+        case let .get(queryItems), let .head(queryItems), let .delete(queryItems):
+            urlComponents?.queryItems = queryItems
+        default:
+            break
+        }
         
         guard let url = urlComponents?.url else {
             throw URLRequestBuilderError.requestBuilding(description: "check \(api.self) path or queryItems")
@@ -43,8 +49,11 @@ final class URLRequestBuilder {
             request.addValue(header.value, forHTTPHeaderField: header.key.rawValue)
         }
         
-        if api.method == .post {
-            request.httpBody = api.body
+        switch api.method {
+        case let .post(body), let .put(body):
+            request.httpBody = body
+        default:
+            break
         }
         
         return request

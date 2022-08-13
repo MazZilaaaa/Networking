@@ -14,22 +14,10 @@ protocol API {
     var method: HttpMethod { get }
     
     var headers: [HttpHeader: String]? { get }
-    
-    var queryItems: [URLQueryItem]? { get }
-    
-    var body: Data? { get }
 }
 
 extension API {
     var headers: [HttpHeader: String]? {
-        return nil
-    }
-    
-    var queryItems: [URLQueryItem]? {
-        return nil
-    }
-    
-    var body: Data? {
         return nil
     }
 }
