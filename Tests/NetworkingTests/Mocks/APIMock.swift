@@ -9,7 +9,7 @@ import Foundation
 
 @testable import Networking
 
-struct MockAPI: API {
+struct APIMock: API {
     var path: String
     var method: HttpMethod
     var headers: [HttpHeader: String]?
@@ -25,12 +25,12 @@ struct MockAPI: API {
     }
 }
 
-extension MockAPI {
+extension APIMock {
     static func createAPI(
         path: String = "/relative",
         method: HttpMethod = .get(),
         headers: [HttpHeader : String]? = nil
     ) -> API {
-        MockAPI(path: path, method: method, headers: headers)
+        APIMock(path: path, method: method, headers: headers)
     }
 }
