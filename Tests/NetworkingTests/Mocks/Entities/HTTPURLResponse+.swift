@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  HTTPURLResponse+.swift
 //  
 //
 //  Created by Aleksandr Fadeev on 14.08.2022.

@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  TestModel+.swift
 //  
 //
 //  Created by Aleksandr Fadeev on 14.08.2022.
