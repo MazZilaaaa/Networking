@@ -22,7 +22,7 @@ final class NetworkProviderTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        URLProtocolMock.statusCode = nil
+        URLProtocolMock.responseMock = nil
         URLProtocolMock.error = nil
         
         let configuration = URLSessionConfiguration.default
@@ -38,20 +38,19 @@ final class NetworkProviderTests: XCTestCase {
         super.tearDown()
     }
     
-    func test_fetch_200() {
+    func test_send_200() {
         // given
-        let url = URL(string: "https://github.com")!
-        let request = URLRequest(url: url)
-        URLProtocolMock.statusCode = 200
+        let request: URLRequest = .stub()
+        let data: Data? = "json".data(using: .utf8)
         
+        URLProtocolMock.responseMock = .ok(data: data)
         var receivedData: Data?
         var receivedCompletion: Subscribers.Completion<Error>?
-        
-        let expectation = expectation(description: "test_fetch_200")
+        let expectation = expectation(description: "test_send_200")
         
         // when
         provider
-            .fetch(from: request)
+            .send(request)
             .sink { completion in
                 receivedCompletion = completion
                 expectation.fulfill()
@@ -63,6 +62,7 @@ final class NetworkProviderTests: XCTestCase {
         waitForExpectations(timeout: 0.5)
         
         // then
+        XCTAssertEqual(receivedData, data)
         XCTAssertEqual(URLProtocolMock.receivedCanonicalRequest, request)
         
         guard case .finished = receivedCompletion else {
@@ -71,18 +71,18 @@ final class NetworkProviderTests: XCTestCase {
         }
     }
     
-    func test_fetch_400() {
+    func test_send_400() {
         // given
         let url = URL(string: "https://github.com")!
         let request = URLRequest(url: url)
         var receivedCompletion: Subscribers.Completion<Error>?
-        URLProtocolMock.statusCode = 400
+        URLProtocolMock.responseMock = .badRequest()
         
-        let expectation = expectation(description: "test_fetch_400")
+        let expectation = expectation(description: "test_send_400")
         
         // when
         provider
-            .fetch(from: request)
+            .send(request)
             .sink { completion in
                 receivedCompletion = completion
                 expectation.fulfill()
@@ -107,18 +107,18 @@ final class NetworkProviderTests: XCTestCase {
         XCTAssertEqual(receivedResponse.statusCode, 400)
     }
     
-    func test_fetch_500() {
+    func test_send_500() {
         // given
         let url = URL(string: "https://github.com")!
         let request = URLRequest(url: url)
         var receivedCompletion: Subscribers.Completion<Error>?
-        URLProtocolMock.statusCode = 500
+        URLProtocolMock.responseMock = .serverError()
         
-        let expectation = expectation(description: "test_fetch_500")
+        let expectation = expectation(description: "test_send_500")
         
         // when
         provider
-            .fetch(from: request)
+            .send(request)
             .sink { completion in
                 receivedCompletion = completion
                 expectation.fulfill()
@@ -143,18 +143,18 @@ final class NetworkProviderTests: XCTestCase {
         XCTAssertEqual(receivedResponse.statusCode, 500)
     }
     
-    func test_fetch_600() {
+    func test_send_600() {
         // given
         let url = URL(string: "https://github.com")!
         let request = URLRequest(url: url)
         var receivedCompletion: Subscribers.Completion<Error>?
-        URLProtocolMock.statusCode = 600
+        URLProtocolMock.responseMock = .badStatusCode()
         
-        let expectation = expectation(description: "test_fetch_600")
+        let expectation = expectation(description: "test_send_600")
         
         // when
         provider
-            .fetch(from: request)
+            .send(request)
             .sink { completion in
                 receivedCompletion = completion
                 expectation.fulfill()
@@ -179,18 +179,18 @@ final class NetworkProviderTests: XCTestCase {
         XCTAssertEqual(receivedResponse.statusCode, 600)
     }
     
-    func test_fetch_error() {
+    func test_send_error() {
         // given
         let url = URL(string: "https://github.com")!
         let request = URLRequest(url: url)
         var receivedCompletion: Subscribers.Completion<Error>?
         URLProtocolMock.error = NetworkProviderTestsError.test
         
-        let expectation = expectation(description: "test_fetch_error")
+        let expectation = expectation(description: "test_send_error")
         
         // when
         provider
-            .fetch(from: request)
+            .send(request)
             .sink { completion in
                 receivedCompletion = completion
                 expectation.fulfill()

@@ -63,7 +63,7 @@ enum HttpHeader: String, Hashable {
     case accept = "Accept"
     
     /// [RFC 7231 HTTP/1.1 Semantics and Content  June 2014](https://datatracker.ietf.org/doc/html/rfc7231#section-5.3.3)
-    case acceptCharset = "accept-Charset"
+    case acceptCharset = "Accept-Charset"
     
     /// [RFC 7231 HTTP/1.1 Semantics and Content  June 2014](https://datatracker.ietf.org/doc/html/rfc7231#section-5.3.4)
     case acceptEncoding = "Accept-Encoding"

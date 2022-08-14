@@ -10,22 +10,18 @@ import XCTest
 @testable import Networking
 
 final class URLRequestBuilderTests: XCTestCase {
-    private var builder: URLRequestBuilder!
+    private var builder: URLRequestBuilderProtocol!
     private var hostUrl: URL!
     
     override func setUp() {
         super.setUp()
         
-        hostUrl = URL(string: "https://github.com")!
+        hostUrl = .stub()
         builder = URLRequestBuilder(hostUrl: hostUrl)
     }
     
     func test_createBuilderWithUrl() {
-        // given
-        let hostUrl = URL(string: "https://github.com")!
-        
         // then
-        let builder = URLRequestBuilder(hostUrl: hostUrl)
         XCTAssertEqual(hostUrl, builder.hostUrl)
     }
     
@@ -52,7 +48,9 @@ final class URLRequestBuilderTests: XCTestCase {
     
     func test_buildRequest_common() throws {
         // given
-        let api = APIMock.createAPI(
+        let relativePath = "/relative/path"
+        let endpoint = EndpointMock.createEndpoint(
+            path: relativePath,
             headers: [
                 .accept: "Application/json",
                 .authorization: "Bearer token"
@@ -60,14 +58,14 @@ final class URLRequestBuilderTests: XCTestCase {
         )
         
         // when
-        let request = try builder.buildRequest(api)
+        let request = try builder.buildRequest(endpoint)
         
         // then
         XCTAssertEqual(request.url?.scheme, hostUrl.scheme)
         XCTAssertEqual(request.url?.host, hostUrl.host)
-        XCTAssertEqual(request.url?.relativePath, api.path)
+        XCTAssertEqual(request.url?.relativePath, relativePath)
         
-        api.headers?.forEach { header in
+        endpoint.headers?.forEach { header in
             XCTAssertEqual(request.allHTTPHeaderFields?[header.key.rawValue], header.value)
         }
     }
@@ -79,10 +77,10 @@ final class URLRequestBuilderTests: XCTestCase {
             URLQueryItem(name: "name2", value: "value2")
         ]
         
-        let getAPI = APIMock.createAPI(method: .get(queryItems: queryItems))
+        let endpoint = EndpointMock.createEndpoint(method: .get(queryItems: queryItems))
         
         // when
-        let request = try builder.buildRequest(getAPI)
+        let request = try builder.buildRequest(endpoint)
         
         // then
         XCTAssertEqual(request.httpMethod, "GET")
@@ -99,10 +97,10 @@ final class URLRequestBuilderTests: XCTestCase {
             URLQueryItem(name: "name2", value: "value2")
         ]
         
-        let headAPI = APIMock(method: .head(queryItems: queryItems))
+        let endpoint = EndpointMock(method: .head(queryItems: queryItems))
         
         // when
-        let request = try builder.buildRequest(headAPI)
+        let request = try builder.buildRequest(endpoint)
         
         // then
         XCTAssertEqual(request.httpMethod, "HEAD")
@@ -115,10 +113,10 @@ final class URLRequestBuilderTests: XCTestCase {
     func test_buildPostRequest() throws {
         // given
         let body = "json".data(using: .utf8)!
-        let postAPI = APIMock(method: .post(body: body))
+        let endpoint = EndpointMock(method: .post(body: body))
         
         // when
-        let request = try builder.buildRequest(postAPI)
+        let request = try builder.buildRequest(endpoint)
         
         // then
         XCTAssertEqual(request.httpMethod, "POST")
@@ -128,10 +126,10 @@ final class URLRequestBuilderTests: XCTestCase {
     func test_buildPutRequest() throws {
         // given
         let body = "json".data(using: .utf8)!
-        let putAPI = APIMock(method: .put(body: body))
+        let endpoint = EndpointMock(method: .put(body: body))
         
         // when
-        let request = try builder.buildRequest(putAPI)
+        let request = try builder.buildRequest(endpoint)
         
         // then
         XCTAssertEqual(request.httpMethod, "PUT")
@@ -145,10 +143,10 @@ final class URLRequestBuilderTests: XCTestCase {
             URLQueryItem(name: "name2", value: "value2")
         ]
         
-        let deleteAPI = APIMock(method: .delete(queryItems: queryItems))
+        let endpoint = EndpointMock(method: .delete(queryItems: queryItems))
         
         // when
-        let request = try builder.buildRequest(deleteAPI)
+        let request = try builder.buildRequest(endpoint)
         
         // then
         XCTAssertEqual(request.httpMethod, "DELETE")

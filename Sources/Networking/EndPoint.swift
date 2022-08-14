@@ -1,5 +1,5 @@
 //
-//  API.swift
+//  EndPoint.swift
 //  
 //
 //  Created by Aleksandr Fadeev on 13.08.2022.
@@ -7,13 +7,13 @@
 
 import Foundation
 
-protocol API {
+protocol EndPoint {
     var path: String { get }
     var method: HttpMethod { get }
     var headers: [HttpHeader: String]? { get }
 }
 
-extension API {
+extension EndPoint {
     var headers: [HttpHeader: String]? {
         return nil
     }

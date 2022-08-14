@@ -1,5 +1,5 @@
 //
-//  APIMock.swift
+//  EndpointMock.swift
 //  
 //
 //  Created by Aleksandr Fadeev on 13.08.2022.
@@ -9,7 +9,7 @@ import Foundation
 
 @testable import Networking
 
-struct APIMock: API {
+struct EndpointMock: EndPoint {
     var path: String
     var method: HttpMethod
     var headers: [HttpHeader: String]?
@@ -25,12 +25,12 @@ struct APIMock: API {
     }
 }
 
-extension APIMock {
-    static func createAPI(
+extension EndpointMock {
+    static func createEndpoint(
         path: String = "/relative",
         method: HttpMethod = .get(),
         headers: [HttpHeader : String]? = nil
-    ) -> API {
-        APIMock(path: path, method: method, headers: headers)
+    ) -> EndPoint {
+        EndpointMock(path: path, method: method, headers: headers)
     }
 }

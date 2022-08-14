@@ -7,9 +7,29 @@
 
 import Foundation
 
+enum URLPRotocolResponseMock {
+    case ok(data: Data? = nil)
+    case badRequest(response: URLResponse? = nil)
+    case serverError(response: URLResponse? = nil)
+    case badStatusCode(response: URLResponse? = nil)
+    
+    var statusCode: Int {
+        switch self {
+        case .ok:
+            return 200
+        case .badRequest:
+            return 400
+        case .serverError:
+            return 500
+        case .badStatusCode:
+            return 600
+        }
+    }
+}
+
 final class URLProtocolMock: URLProtocol {
     static var receivedCanonicalRequest: URLRequest?
-    static var statusCode: Int?
+    static var responseMock: URLPRotocolResponseMock?
     static var error: Error?
     
     override class func canInit(with request: URLRequest) -> Bool {
@@ -24,8 +44,8 @@ final class URLProtocolMock: URLProtocol {
     
     
     override func startLoading() {
-        if let statusCode = URLProtocolMock.statusCode {
-            complete(statusCode: statusCode)
+        if let response = URLProtocolMock.responseMock {
+            complete(responseMock: response)
             return
         }
         
@@ -41,10 +61,18 @@ final class URLProtocolMock: URLProtocol {
         client?.urlProtocol(self, didFailWithError: error)
     }
     
-    func complete(statusCode: Int) {
-        let response = HTTPURLResponse(url: URL(string: "https://mock.com")!, statusCode: statusCode, httpVersion: nil, headerFields: nil)!
-        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .allowed)
-        client?.urlProtocol(self, didLoad: "testData".data(using: .utf8)!)
+    func complete(responseMock: URLPRotocolResponseMock) {
+        let responseHTTPURLResponse: HTTPURLResponse  = .stub(
+            statusCode: responseMock.statusCode
+        )
+        
+        client?.urlProtocol(self, didReceive: responseHTTPURLResponse, cacheStoragePolicy: .allowed)
+        
+        if case let .ok(data) = responseMock,
+            let data = data {
+            client?.urlProtocol(self, didLoad: data)
+        }
+        
         client?.urlProtocolDidFinishLoading(self)
     }
 }

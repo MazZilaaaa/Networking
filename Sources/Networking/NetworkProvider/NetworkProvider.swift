@@ -8,22 +8,16 @@
 import Combine
 import Foundation
 
-enum NetworkError: Error {
-    case emptyResponse(error: Error)
-    case badResponse(response: URLResponse)
-    case badRequest(response: HTTPURLResponse)
-    case serverError(response: HTTPURLResponse)
-    case badStatusCode(response: HTTPURLResponse)
-}
-
 final class NetworkProvider {
     private let urlSession: URLSession
     
     init(urlSession: URLSession = .shared) {
         self.urlSession = urlSession
     }
-    
-    func fetch(from request: URLRequest) -> AnyPublisher<Data, Error> {
+}
+
+extension NetworkProvider: NetworkProviderProtocol {
+    func send(_ request: URLRequest) -> AnyPublisher<Data, Error> {
         return urlSession
             .dataTaskPublisher(for: request)
             .mapError { error in

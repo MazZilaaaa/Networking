@@ -5,6 +5,7 @@
 //  Created by Aleksandr Fadeev on 13.08.2022.
 //
 
+import Combine
 import Foundation
 
 enum URLRequestBuilderError: Error {
@@ -26,12 +27,14 @@ final class URLRequestBuilder {
         
         self.hostUrl = host
     }
-    
-    func buildRequest(_ api: API) throws -> URLRequest {
+}
+
+extension URLRequestBuilder: URLRequestBuilderProtocol {
+    func buildRequest(_ endpoint: EndPoint) throws -> URLRequest {
         var urlComponents = URLComponents(url: hostUrl, resolvingAgainstBaseURL: false)
-        urlComponents?.path = api.path
+        urlComponents?.path = endpoint.path
         
-        switch api.method {
+        switch endpoint.method {
         case let .get(queryItems), let .head(queryItems), let .delete(queryItems):
             urlComponents?.queryItems = queryItems
         default:
@@ -39,17 +42,17 @@ final class URLRequestBuilder {
         }
         
         guard let url = urlComponents?.url else {
-            throw URLRequestBuilderError.requestBuilding(description: "check \(api.self) path or queryItems")
+            throw URLRequestBuilderError.requestBuilding(description: "check \(endpoint.self) path or queryItems")
         }
         
         var request = URLRequest(url: url)
-        request.httpMethod = api.method.rawValue
+        request.httpMethod = endpoint.method.rawValue
         
-        api.headers?.forEach { header in
+        endpoint.headers?.forEach { header in
             request.addValue(header.value, forHTTPHeaderField: header.key.rawValue)
         }
         
-        switch api.method {
+        switch endpoint.method {
         case let .post(body), let .put(body):
             request.httpBody = body
         default:
@@ -57,5 +60,11 @@ final class URLRequestBuilder {
         }
         
         return request
+    }
+    
+    func buildRequestPublisher(_ endpoint: EndPoint) -> AnyPublisher<URLRequest, Error> {
+        Just(())
+            .tryMap { try buildRequest(endpoint) }
+            .eraseToAnyPublisher()
     }
 }
