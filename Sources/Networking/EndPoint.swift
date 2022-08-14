@@ -12,9 +12,3 @@ public protocol EndPoint {
     var method: HttpMethod { get }
     var headers: [HttpHeader: String]? { get }
 }
-
-extension EndPoint {
-    var headers: [HttpHeader: String]? {
-        return nil
-    }
-}
