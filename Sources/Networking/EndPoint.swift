@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol EndPoint {
+public protocol EndPoint {
     var path: String { get }
     var method: HttpMethod { get }
     var headers: [HttpHeader: String]? { get }

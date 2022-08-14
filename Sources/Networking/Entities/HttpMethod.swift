@@ -8,7 +8,7 @@
 import Foundation
 
 ///// [Request methods specification](https://datatracker.ietf.org/doc/html/rfc7231#section-4)
-enum HttpMethod {
+public enum HttpMethod: Hashable {
     
     /// [RFC 7231 HTTP/1.1 Semantics and Content June 2014](https://datatracker.ietf.org/doc/html/rfc7231#section-4.3.1)
     case get(queryItems: [URLQueryItem]? = nil)

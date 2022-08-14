@@ -8,7 +8,7 @@
 import Foundation
 
 /// [Request Header fields specification](https://datatracker.ietf.org/doc/html/rfc7231#section-5)
-enum HttpHeader: String, Hashable {
+public enum HttpHeader: String, Hashable {
     
     // MARK: Controls
     /// [RFC 7231 HTTP/1.1 Semantics and Content June 2014](https://datatracker.ietf.org/doc/html/rfc7231#section-5.1)

@@ -18,7 +18,7 @@ final class URLRequestBuilderProtocolMock: URLRequestBuilderProtocol {
     var buildReuestMocked: URLRequest!
     var buildRequestPublisherMock: AnyPublisher<URLRequest, Error>!
     
-    init(hostUrl: URL) {
+    init(hostUrl: URL = .stub()) {
         self.hostUrl = hostUrl
     }
     

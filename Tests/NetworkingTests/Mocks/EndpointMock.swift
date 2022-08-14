@@ -30,7 +30,7 @@ extension EndpointMock {
         path: String = "/relative",
         method: HttpMethod = .get(),
         headers: [HttpHeader : String]? = nil
-    ) -> EndPoint {
+    ) -> EndpointMock {
         EndpointMock(path: path, method: method, headers: headers)
     }
 }

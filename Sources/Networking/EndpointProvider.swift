@@ -8,10 +8,25 @@
 import Combine
 import Foundation
 
-final public class EndpointProvider {
+final public class EndpointProvider<EndpointType: EndPoint> {
     private let networkProvider: NetworkProviderProtocol
     private let requestBuilder: URLRequestBuilderProtocol
     private let jsonDecoder: JSONDecoder
+    
+    public convenience init(hostUrl: URL) {
+        self.init(
+            networkProvider: NetworkProvider(),
+            requestBuilder: URLRequestBuilder(hostUrl: hostUrl)
+        )
+    }
+    
+    public convenience init(hostUrl: URL, jsonDecoder: JSONDecoder) {
+        self.init(
+            networkProvider: NetworkProvider(),
+            requestBuilder: URLRequestBuilder(hostUrl: hostUrl),
+            jsonDecoder: jsonDecoder
+        )
+    }
     
     init(
         networkProvider: NetworkProviderProtocol,
@@ -23,13 +38,26 @@ final public class EndpointProvider {
         self.jsonDecoder = jsonDecoder
     }
     
-    func send<T: Decodable>(endpoint: EndPoint) -> AnyPublisher<T, Error> {
-        requestBuilder
+    public func execute<T: Decodable>(endpoint: EndpointType) -> AnyPublisher<T, Error> {
+        return send(endpoint: endpoint)
+            .decode(type: T.self, decoder: jsonDecoder)
+            .eraseToAnyPublisher()
+    }
+    
+    public func execute(endpoint: EndpointType) -> AnyPublisher<Void, Error> {
+        return send(endpoint: endpoint)
+            .map { _ in
+                return ()
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    private func send(endpoint: EndpointType) -> AnyPublisher<Data, Error> {
+        return requestBuilder
             .buildRequestPublisher(endpoint)
             .flatMap { [networkProvider] request in
                 networkProvider.send(request)
             }
-            .decode(type: T.self, decoder: jsonDecoder)
             .eraseToAnyPublisher()
     }
 }
