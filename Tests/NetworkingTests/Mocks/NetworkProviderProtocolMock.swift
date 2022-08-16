@@ -11,10 +11,11 @@ import Foundation
 @testable import Networking
 
 final class NetworkProviderProtocolMock: NetworkProviderProtocol {
+    
     var receivedRequest: URLRequest?
     
-    var sendPublisher: AnyPublisher<Data, Error>!
-    func send(_ request: URLRequest) -> AnyPublisher<Data, Error> {
+    var sendPublisher: AnyPublisher<(data: Data, response: URLResponse), Error>!
+    func send(_ request: URLRequest) -> AnyPublisher<(data: Data, response: URLResponse), Error> {
         receivedRequest = request
         
         return sendPublisher

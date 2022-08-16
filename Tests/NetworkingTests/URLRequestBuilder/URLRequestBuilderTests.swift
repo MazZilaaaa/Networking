@@ -40,8 +40,8 @@ final class URLRequestBuilderTests: XCTestCase {
         
         // then
         XCTAssertThrowsError(try URLRequestBuilder(hostString: hostString)) { error in
-            guard case URLRequestBuilderError.baseUrlBuilding = error else {
-                return XCTFail("error should be \(URLRequestBuilderError.baseUrlBuilding)")
+            guard case BuildingRequestError.invalidHostString = error else {
+                return XCTFail("error should be \(BuildingRequestError.invalidHostString)")
             }
         }
     }

@@ -9,5 +9,5 @@ import Combine
 import Foundation
 
 protocol NetworkProviderProtocol {
-    func send(_ request: URLRequest) -> AnyPublisher<Data, Error>
+    func send(_ request: URLRequest) -> AnyPublisher<(data: Data, response: URLResponse), Error>
 }

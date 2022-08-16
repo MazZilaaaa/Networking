@@ -11,12 +11,14 @@ import Foundation
 final public class EndpointProvider<EndpointType: EndPoint> {
     private let networkProvider: NetworkProviderProtocol
     private let requestBuilder: URLRequestBuilderProtocol
+    private let responseValidator: ResponseValidatorProtocol
     private let jsonDecoder: JSONDecoder
     
     public convenience init(hostUrl: URL) {
         self.init(
             networkProvider: NetworkProvider(),
-            requestBuilder: URLRequestBuilder(hostUrl: hostUrl)
+            requestBuilder: URLRequestBuilder(hostUrl: hostUrl),
+            responseValidator: ResponseValidator()
         )
     }
     
@@ -24,6 +26,7 @@ final public class EndpointProvider<EndpointType: EndPoint> {
         self.init(
             networkProvider: NetworkProvider(),
             requestBuilder: URLRequestBuilder(hostUrl: hostUrl),
+            responseValidator: ResponseValidator(),
             jsonDecoder: jsonDecoder
         )
     }
@@ -31,10 +34,12 @@ final public class EndpointProvider<EndpointType: EndPoint> {
     init(
         networkProvider: NetworkProviderProtocol,
         requestBuilder: URLRequestBuilderProtocol,
+        responseValidator: ResponseValidatorProtocol,
         jsonDecoder: JSONDecoder = JSONDecoder()
     ) {
         self.networkProvider = networkProvider
         self.requestBuilder = requestBuilder
+        self.responseValidator = responseValidator
         self.jsonDecoder = jsonDecoder
     }
     
@@ -57,6 +62,13 @@ final public class EndpointProvider<EndpointType: EndPoint> {
             .buildRequestPublisher(endpoint)
             .flatMap { [networkProvider] request in
                 networkProvider.send(request)
+            }
+            .tryMap { [responseValidator] data, response in
+                if endpoint.errorValidationType != ErrorValidationType.none {
+                    try responseValidator.validate(response: response)
+                }
+                
+                return data
             }
             .eraseToAnyPublisher()
     }

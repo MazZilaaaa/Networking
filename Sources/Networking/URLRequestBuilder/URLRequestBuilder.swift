@@ -8,11 +8,6 @@
 import Combine
 import Foundation
 
-enum URLRequestBuilderError: Error {
-    case baseUrlBuilding
-    case requestBuilding(description: String)
-}
-
 final class URLRequestBuilder {
     let hostUrl: URL
     
@@ -22,7 +17,7 @@ final class URLRequestBuilder {
     
     init(hostString: String) throws {
         guard let host = URL(string: hostString) else {
-            throw URLRequestBuilderError.baseUrlBuilding
+            throw BuildingRequestError.invalidHostString
         }
         
         self.hostUrl = host
@@ -42,7 +37,7 @@ extension URLRequestBuilder: URLRequestBuilderProtocol {
         }
         
         guard let url = urlComponents?.url else {
-            throw URLRequestBuilderError.requestBuilding(description: "check \(endpoint.self) path or queryItems")
+            throw BuildingRequestError.invalidUrlComponents(description: "check \(endpoint.self) path or queryItems")
         }
         
         var request = URLRequest(url: url)
