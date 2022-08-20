@@ -43,21 +43,14 @@ final public class EndpointProvider<EndpointType: EndPoint> {
         self.jsonDecoder = jsonDecoder
     }
     
-    public func execute<T: Decodable>(endpoint: EndpointType) -> AnyPublisher<T, Error> {
-        return send(endpoint: endpoint)
+    public func load<T: Decodable>(endpoint: EndpointType) -> AnyPublisher<T, Error> {
+        return load(endpoint: endpoint)
+            .print()
             .decode(type: T.self, decoder: jsonDecoder)
             .eraseToAnyPublisher()
     }
     
-    public func execute(endpoint: EndpointType) -> AnyPublisher<Void, Error> {
-        return send(endpoint: endpoint)
-            .map { _ in
-                return ()
-            }
-            .eraseToAnyPublisher()
-    }
-    
-    private func send(endpoint: EndpointType) -> AnyPublisher<Data, Error> {
+    public func load(endpoint: EndpointType) -> AnyPublisher<Data, Error> {
         return requestBuilder
             .buildRequestPublisher(endpoint)
             .flatMap { [networkProvider] request in

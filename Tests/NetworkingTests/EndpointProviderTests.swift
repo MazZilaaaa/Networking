@@ -36,7 +36,7 @@ final class EndpointProviderTests: XCTestCase {
     
     // MARK: success responses
     
-    func test_executeWithResult() {
+    func test_loadDecodable() {
         // given
         let request: URLRequest = .stub()
         let endpoint = EndpointMock.createEndpoint()
@@ -53,7 +53,7 @@ final class EndpointProviderTests: XCTestCase {
         var receivedResult: TestModel?
         
         // when
-        provider.execute(endpoint: endpoint)
+        provider.load(endpoint: endpoint)
             .sink { _ in
                 expectation.fulfill()
             } receiveValue: { result in
@@ -71,7 +71,7 @@ final class EndpointProviderTests: XCTestCase {
         XCTAssertEqual(receivedResult?.title, "title")
     }
     
-    func test_executeWithResult_void() {
+    func test_loadData() {
         // given
         let request: URLRequest = .stub()
         let endpoint = EndpointMock.createEndpoint()
@@ -87,10 +87,10 @@ final class EndpointProviderTests: XCTestCase {
         let expectation = expectation(description: "test_endpointProvider_void")
         
         // when
-        provider.execute(endpoint: endpoint)
+        provider.load(endpoint: endpoint)
             .sink { _ in
                 expectation.fulfill()
-            } receiveValue: { _ in
+            } receiveValue: { (result: Data) in
             }
             .store(in: &subscriptions)
         
@@ -105,7 +105,7 @@ final class EndpointProviderTests: XCTestCase {
     
     // MARK: NetworkError
     
-    func test_executeWithResult_networkError() {
+    func test_loadDecodable_networkError() {
         // given
         requestBuilder.buildRequestPublisherMock = Just(.stub())
             .setFailureType(to: Error.self)
@@ -118,7 +118,7 @@ final class EndpointProviderTests: XCTestCase {
         var receivedCompletion: Subscribers.Completion<Error>?
         
         // when
-        provider.execute(endpoint: .createEndpoint())
+        provider.load(endpoint: .createEndpoint())
             .sink { completion in
                 receivedCompletion = completion
                 expectation.fulfill()
@@ -140,7 +140,7 @@ final class EndpointProviderTests: XCTestCase {
         }
     }
     
-    func test_executeWithVoidResult_networkError() {
+    func test_loadData_networkError() {
         // given
         requestBuilder.buildRequestPublisherMock = Just(.stub())
             .setFailureType(to: Error.self)
@@ -153,11 +153,11 @@ final class EndpointProviderTests: XCTestCase {
         var receivedCompletion: Subscribers.Completion<Error>?
         
         // when
-        provider.execute(endpoint: .createEndpoint())
+        provider.load(endpoint: .createEndpoint())
             .sink { completion in
                 receivedCompletion = completion
                 expectation.fulfill()
-            } receiveValue: { (result: Void) in
+            } receiveValue: { (result: Data) in
             }
             .store(in: &subscriptions)
         
@@ -177,7 +177,7 @@ final class EndpointProviderTests: XCTestCase {
     
     // MARK: MappingError
     
-    func test_executeWithResult_mappingError() {
+    func test_loadDecodable_mappingError() {
         // given
         requestBuilder.buildRequestPublisherMock = Just(.stub())
             .setFailureType(to: Error.self)
@@ -190,7 +190,7 @@ final class EndpointProviderTests: XCTestCase {
         var receivedCompletion: Subscribers.Completion<Error>?
         
         // when
-        provider.execute(endpoint: .createEndpoint())
+        provider.load(endpoint: .createEndpoint())
             .sink { completion in
                 receivedCompletion = completion
                 expectation.fulfill()
@@ -211,15 +211,15 @@ final class EndpointProviderTests: XCTestCase {
     
     // MARK: ResponseValidatingError
     
-    func test_executeWithResult_validatingResponseError() {
-        test_executeWithResult_validateError(.redirect(response: .stub()))
-        test_executeWithResult_validateError(.badResponse(response: .stub()))
-        test_executeWithResult_validateError(.badRequest(response: .stub()))
-        test_executeWithResult_validateError(.serverError(response: .stub()))
-        test_executeWithResult_validateError(.badStatusCode(response: .stub()))
+    func test_loadDecodable_validatingResponseError() {
+        test_loadDecodable_validateError(.redirect(response: .stub()))
+        test_loadDecodable_validateError(.badResponse(response: .stub()))
+        test_loadDecodable_validateError(.badRequest(response: .stub()))
+        test_loadDecodable_validateError(.serverError(response: .stub()))
+        test_loadDecodable_validateError(.badStatusCode(response: .stub()))
     }
     
-    func test_executeWithResult_validateError(_ error: ResponseValidatorError) {
+    func test_loadDecodable_validateError(_ error: ResponseValidatorError) {
         // given
         requestBuilder.buildRequestPublisherMock = CurrentValueSubject(.stub()).eraseToAnyPublisher()
         
@@ -228,10 +228,10 @@ final class EndpointProviderTests: XCTestCase {
         responseValidator.throwError = error
         
         var receivedCompletion: Subscribers.Completion<Error>?
-        let expectation = expectation(description: "test_executeWithResult_validateError")
+        let expectation = expectation(description: "test_loadWithResult_validateError")
         
         // when
-        provider.execute(endpoint: .createEndpoint())
+        provider.load(endpoint: .createEndpoint())
             .sink { completion in
                 receivedCompletion = completion
                 expectation.fulfill()
@@ -249,14 +249,14 @@ final class EndpointProviderTests: XCTestCase {
         XCTAssertEqual(receivedError as? ResponseValidatorError, error)
     }
     
-    func test_executeVoid_validatingResponseError() {
-        test_executeVoid_validatingResponseError(.badResponse(response: .stub()))
-        test_executeVoid_validatingResponseError(.badRequest(response: .stub()))
-        test_executeVoid_validatingResponseError(.serverError(response: .stub()))
-        test_executeVoid_validatingResponseError(.badStatusCode(response: .stub()))
+    func test_loadData_validatingResponseError() {
+        test_loadData_validatingResponseError(.badResponse(response: .stub()))
+        test_loadData_validatingResponseError(.badRequest(response: .stub()))
+        test_loadData_validatingResponseError(.serverError(response: .stub()))
+        test_loadData_validatingResponseError(.badStatusCode(response: .stub()))
     }
     
-    func test_executeVoid_validatingResponseError(_ error: ResponseValidatorError) {
+    func test_loadData_validatingResponseError(_ error: ResponseValidatorError) {
         // given
         requestBuilder.buildRequestPublisherMock = CurrentValueSubject(.stub()).eraseToAnyPublisher()
         
@@ -268,11 +268,11 @@ final class EndpointProviderTests: XCTestCase {
         var receivedCompletion: Subscribers.Completion<Error>?
         
         // when
-        provider.execute(endpoint: .createEndpoint())
+        provider.load(endpoint: .createEndpoint())
             .sink { completion in
                 receivedCompletion = completion
                 expectation.fulfill()
-            } receiveValue: { _ in
+            } receiveValue: { (data: Data) in
             }
             .store(in: &subscriptions)
         
@@ -287,7 +287,7 @@ final class EndpointProviderTests: XCTestCase {
         XCTAssertEqual(receivedError as? ResponseValidatorError, error)
     }
     
-    func test_executeVoid_validatingDisabledResponseError() {
+    func test_loadData_validatingDisabledResponseError() {
         // given
         requestBuilder.buildRequestPublisherMock = Just(.stub())
             .setFailureType(to: Error.self)
@@ -304,11 +304,11 @@ final class EndpointProviderTests: XCTestCase {
         var receivedCompletion: Subscribers.Completion<Error>?
         
         // when
-        provider.execute(endpoint: .createEndpoint(errorValidationType: ErrorValidationType.none))
+        provider.load(endpoint: .createEndpoint(errorValidationType: ErrorValidationType.none))
             .sink { completion in
                 receivedCompletion = completion
                 expectation.fulfill()
-            } receiveValue: { _ in
+            } receiveValue: { (data: Data) in
             }
             .store(in: &subscriptions)
         
