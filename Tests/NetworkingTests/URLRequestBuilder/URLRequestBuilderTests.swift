@@ -65,9 +65,8 @@ final class URLRequestBuilderTests: XCTestCase {
         XCTAssertEqual(request.url?.host, hostUrl.host)
         XCTAssertEqual(request.url?.relativePath, relativePath)
         
-        endpoint.headers?.forEach { header in
-            XCTAssertEqual(request.allHTTPHeaderFields?[header.key.rawValue], header.value)
-        }
+        XCTAssertEqual(endpoint.headers?[.accept], "Application/json")
+        XCTAssertEqual(endpoint.headers?[.authorization], "Bearer token")
     }
     
     func test_buildGetRequest() throws {
@@ -84,10 +83,7 @@ final class URLRequestBuilderTests: XCTestCase {
         
         // then
         XCTAssertEqual(request.httpMethod, "GET")
-        
-        queryItems.forEach { queryItem in
-            XCTAssertTrue(request.url?.query?.contains("\(queryItem)") == true)
-        }
+        XCTAssertTrue(request.url?.query?.contains("name1=value1&name2=value2") == true)
     }
     
     func test_buildHeadRequest() throws {
@@ -104,10 +100,7 @@ final class URLRequestBuilderTests: XCTestCase {
         
         // then
         XCTAssertEqual(request.httpMethod, "HEAD")
-        
-        queryItems.forEach { queryItem in
-            XCTAssertTrue(request.url?.query?.contains("\(queryItem)") == true)
-        }
+        XCTAssertTrue(request.url?.query?.contains("name1=value1&name2=value2") == true)
     }
     
     func test_buildPostRequest() throws {
@@ -150,9 +143,6 @@ final class URLRequestBuilderTests: XCTestCase {
         
         // then
         XCTAssertEqual(request.httpMethod, "DELETE")
-        
-        queryItems.forEach { queryItem in
-            XCTAssertTrue(request.url?.query?.contains("\(queryItem)") == true)
-        }
+        XCTAssertTrue(request.url?.query?.contains("name1=value1&name2=value2") == true)
     }
 }
