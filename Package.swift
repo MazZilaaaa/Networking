@@ -11,6 +11,9 @@ let package = Package(
         .library(
             name: "Networking",
             targets: ["Networking"]),
+        .executable(
+            name: "NetworkingCli",
+            targets: ["NetworkingCli"])
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -25,5 +28,8 @@ let package = Package(
         .testTarget(
             name: "NetworkingTests",
             dependencies: ["Networking"]),
+        .target(
+            name: "NetworkingCli",
+            dependencies: ["Networking"])
     ]
 )
