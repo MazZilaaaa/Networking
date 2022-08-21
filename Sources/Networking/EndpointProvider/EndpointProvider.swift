@@ -9,10 +9,10 @@ import Combine
 import Foundation
 
 final public class EndpointProvider<EndpointType: EndPoint> {
-    private let networkProvider: NetworkProviderProtocol
-    private let requestBuilder: URLRequestBuilderProtocol
-    private let responseValidator: ResponseValidatorProtocol
-    private let jsonDecoder: JSONDecoder
+    let networkProvider: NetworkProviderProtocol
+    let requestBuilder: URLRequestBuilderProtocol
+    let responseValidator: ResponseValidatorProtocol
+    let jsonDecoder: JSONDecoder
     
     public convenience init(hostUrl: URL) {
         self.init(
