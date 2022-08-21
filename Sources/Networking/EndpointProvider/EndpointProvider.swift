@@ -14,7 +14,7 @@ final public class EndpointProvider<EndpointType: EndPoint> {
     private let responseValidator: ResponseValidatorProtocol
     private let jsonDecoder: JSONDecoder
     
-    var mockEnabled: Bool = false
+    public var mockEnabled: Bool = false
     
     public convenience init(hostUrl: URL) {
         self.init(
