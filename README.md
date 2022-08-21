@@ -1,4 +1,6 @@
 # Networking
+### Hight level diagram
+https://miro.com/app/board/uXjVPex3zQ4=/?share_link_id=436548749000
 
 
 ## Next steps
