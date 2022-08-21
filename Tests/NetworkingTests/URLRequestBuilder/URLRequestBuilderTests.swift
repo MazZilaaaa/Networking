@@ -49,7 +49,7 @@ final class URLRequestBuilderTests: XCTestCase {
     func test_buildRequest_common() throws {
         // given
         let relativePath = "/relative/path"
-        let endpoint = EndpointMock.createEndpoint(
+        let endpoint = EndpointMock(
             path: relativePath,
             headers: [
                 .accept: "Application/json",
@@ -76,7 +76,7 @@ final class URLRequestBuilderTests: XCTestCase {
             URLQueryItem(name: "name2", value: "value2")
         ]
         
-        let endpoint = EndpointMock.createEndpoint(method: .get(queryItems: queryItems))
+        let endpoint = EndpointMock(method: .get(queryItems: queryItems))
         
         // when
         let request = try builder.buildRequest(endpoint)

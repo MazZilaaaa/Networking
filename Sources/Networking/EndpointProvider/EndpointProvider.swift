@@ -14,6 +14,8 @@ final public class EndpointProvider<EndpointType: EndPoint> {
     private let responseValidator: ResponseValidatorProtocol
     private let jsonDecoder: JSONDecoder
     
+    var mockEnabled: Bool = false
+    
     public convenience init(hostUrl: URL) {
         self.init(
             networkProvider: NetworkProvider(),
@@ -35,7 +37,8 @@ final public class EndpointProvider<EndpointType: EndPoint> {
         networkProvider: NetworkProviderProtocol,
         requestBuilder: URLRequestBuilderProtocol,
         responseValidator: ResponseValidatorProtocol,
-        jsonDecoder: JSONDecoder = JSONDecoder()
+        jsonDecoder: JSONDecoder = JSONDecoder(),
+        mockEnabled: Bool = false
     ) {
         self.networkProvider = networkProvider
         self.requestBuilder = requestBuilder
@@ -53,6 +56,10 @@ public extension EndpointProvider {
     }
     
     func load(endpoint: EndpointType) -> AnyPublisher<Data, Error> {
+        guard !mockEnabled else {
+            return endpoint.mockedData.publisher.eraseToAnyPublisher()
+        }
+        
         return requestBuilder
             .buildRequestPublisher(endpoint)
             .flatMap { [networkProvider] request in
