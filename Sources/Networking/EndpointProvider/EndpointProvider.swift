@@ -44,15 +44,15 @@ final public class EndpointProvider<EndpointType: EndPoint> {
     }
 }
 
-extension EndpointProvider: EndpointProviderProtocol {
-    public func load<T: Decodable>(endpoint: EndpointType) -> AnyPublisher<T, Error> {
+public extension EndpointProvider {
+    func load<T: Decodable>(endpoint: EndpointType) -> AnyPublisher<T, Error> {
         return load(endpoint: endpoint)
             .print()
             .decode(type: T.self, decoder: jsonDecoder)
             .eraseToAnyPublisher()
     }
     
-    public func load(endpoint: EndpointType) -> AnyPublisher<Data, Error> {
+    func load(endpoint: EndpointType) -> AnyPublisher<Data, Error> {
         return requestBuilder
             .buildRequestPublisher(endpoint)
             .flatMap { [networkProvider] request in
