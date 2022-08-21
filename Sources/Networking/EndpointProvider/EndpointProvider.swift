@@ -42,7 +42,9 @@ final public class EndpointProvider<EndpointType: EndPoint> {
         self.responseValidator = responseValidator
         self.jsonDecoder = jsonDecoder
     }
-    
+}
+
+extension EndpointProvider: EndpointProviderProtocol {
     public func load<T: Decodable>(endpoint: EndpointType) -> AnyPublisher<T, Error> {
         return load(endpoint: endpoint)
             .print()
